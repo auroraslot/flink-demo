@@ -15,18 +15,24 @@ public class BinlogFlinkJob {
 
         // Configure Kafka consumer properties
         Properties properties = new Properties();
-        properties.setProperty("bootstrap.servers", "localhost:9092"); // Kafka broker address
+        properties.setProperty("bootstrap.servers", "kafka:29092"); // Kafka broker address
         properties.setProperty("group.id", "flink-consumer-group");  // Consumer group ID
+        // properties.setProperty("auto.offset.reset", "earliest"); // Start from the earliest message 没吊用
 
         // Create a Kafka consumer to consume from the `dbserver` topic (binlog messages)
         FlinkKafkaConsumer<String> kafkaConsumer = new FlinkKafkaConsumer<>(
-                "dbserver.testdb.order", // Kafka topic
+                "dbserver.testdb.trade_core_order", // Kafka topic
                 new SimpleStringSchema(), // Deserialization schema
                 properties // Kafka properties
         );
 
+        kafkaConsumer.setStartFromEarliest(); // 还是没用
+        kafkaConsumer.setCommitOffsetsOnCheckpoints(true);
+
         // Get the stream from Kafka
         DataStream<String> stream = env.addSource(kafkaConsumer);
+
+        stream.print("Received Binlog Message: ");
 
         // Perform some computation (for example, just print the messages)
         stream.print();
