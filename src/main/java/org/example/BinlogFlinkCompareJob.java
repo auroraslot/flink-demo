@@ -115,8 +115,7 @@ public class BinlogFlinkCompareJob {
         // 7. 在同一个 1 分钟窗口结束时，收集两个 topic 的 count 并比较
         topicCounts
             .windowAll(TumblingEventTimeWindows.of(Time.minutes(1)))
-            .process(new ProcessAllWindowFunction<
-                                Tuple2<String,Long>, String, TimeWindow>() {
+            .process(new ProcessAllWindowFunction<Tuple2<String,Long>, String, TimeWindow>() {
                 @Override
                 public void process(
                     Context ctx,
@@ -153,27 +152,5 @@ public class BinlogFlinkCompareJob {
 
         // 8. 执行 Job
         env.execute("Binlog INSERT Count Compare");
-    }
-
-    /** 原始事件，带 topic + JSON 字符串 */
-    public static class RobustEvent {
-        public String topic;
-        public String json;
-        public RobustEvent() {}
-        public RobustEvent(String topic, String json) {
-            this.topic = topic;
-            this.json = json;
-        }
-    }
-
-    /** 解析后只保留 topic + 时间戳 */
-    public static class ParsedEvent {
-        public String topic;
-        public long   ts;
-        public ParsedEvent() {}
-        public ParsedEvent(String topic, long ts) {
-            this.topic = topic;
-            this.ts    = ts;
-        }
     }
 }
