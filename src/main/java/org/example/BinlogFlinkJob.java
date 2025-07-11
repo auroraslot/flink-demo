@@ -12,6 +12,9 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 简单Flink作业，消费Kafka中的binlog消息并打印出来
+ */
 public class BinlogFlinkJob {
     public static void main(String[] args) throws Exception {
         // Set up the execution environment
